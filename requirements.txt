@@ -4,3 +4,11 @@ torch
 torchvision
 opencv-python-headless
 Pillow
+
+
+segmentation_models_pytorch
+albumentations
+
+numpy
+pandas
+
