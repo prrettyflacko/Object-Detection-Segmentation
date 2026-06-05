@@ -1,0 +1,7 @@
+path: /Users/romanrahmatulin/Projects/phasa3/segmentproject/models/axial_t1wce_2_class
+train: images/train
+val: images/test
+
+# Classes
+nc: 2
+names: ['negative','positive']
