@@ -40,7 +40,7 @@ pages = {
         create_safe_page("tumor_detection.py", "Детекция опухолей мозга", "Детекция опухолей мозга", "🧠", "tumor-detection")
     ],
     "Задачи Сегментации (U-Net)": [
-        create_safe_page("forest_segmentation.py, "Сегментация снимков Земли", "Сегментация снимков Земли", "", "satellite")
+        create_safe_page("forest_segmentation.py", "Сегментация снимков Земли", "Сегментация снимков Земли", "🛰️", "satellite")
     ]
 }
 
