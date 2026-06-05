@@ -1,13 +1,10 @@
-opencv-python-headless
+ultralytics-opencv-headless
 streamlit
-ultralytics
 torch
 torchvision
 Pillow
-
 segmentation_models_pytorch
 albumentations
-
 numpy
 pandas
 requests
