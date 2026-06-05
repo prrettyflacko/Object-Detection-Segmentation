@@ -10,7 +10,7 @@ from ultralytics import YOLO
 
 st.set_page_config(page_title='Face Analys', layout='wide')
 # Ссылка на ваши веса (ЕСЛИ СКАЧИВАНИЕ НЕ НУЖНО - оставьте пустой "" или удалите логику)
-WEIGHTS_URL = "https://your-cloud-storage.com"
+WEIGHTS_URL = "https://github.com/Expat777/Object-Detection-Segmentation/releases/download/v01/best.pt"
 WEIGHTS_PATH = '/home/vitaliy/runs/detect/train-28/weights/best.pt'
 
 @st.cache_resource
