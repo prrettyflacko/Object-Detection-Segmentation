@@ -51,7 +51,7 @@ pg = st.navigation(pages)
 if pg == pages["Главная"][0]:
     st.markdown("""
         <div style="background-color:#1E1E1E; padding:20px; border-radius:10px; border-left: 8px solid #FF4B4B;">
-            <h1 style="color:white; margin:0;">🚀 Computer Vision Project • Yolo Team</h1>
+            <h1 style="color:white; margin:0;">🚀 Computer Vision Project</h1>
             <p style="color:#FAFAFA; font-size:18px; margin-top:10px;">
                 Многофункциональное веб-приложение для решения задач детекции и семантической сегментации.
             </p>
