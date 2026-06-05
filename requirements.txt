@@ -1,15 +1,13 @@
+opencv-python-headless
 streamlit
 ultralytics
 torch
 torchvision
-opencv-python-headless
 Pillow
-requests
-
 
 segmentation_models_pytorch
 albumentations
 
 numpy
 pandas
-
+requests
