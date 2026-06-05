@@ -3,7 +3,7 @@ import streamlit as st
 
 # 1. Общая конфигурация приложения (СТРОГО ОДИН РАЗ ЗДЕСЬ)
 st.set_page_config(
-    page_title="Yolo Team • Computer Vision Project",
+    page_title="• Computer Vision Project",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
