@@ -1,24 +1,26 @@
 import os
 import io
 import requests
+import urllib.request  # ДОБАВЛЕН ИМПОРТ
 import streamlit as st
 import cv2
 import numpy as np
+import torch           # ДОБАВЛЕН ДЛЯ ОПРЕДЕЛЕНИЯ GPU
 from PIL import Image
 from ultralytics import YOLO
 
+# Убран st.set_page_config, так как он уже есть в app.py
 
-st.set_page_config(page_title='Face Analys', layout='wide')
-# Ссылка на ваши веса (ЕСЛИ СКАЧИВАНИЕ НЕ НУЖНО - оставьте пустой "" или удалите логику)
 WEIGHTS_URL = "https://github.com/Expat777/Object-Detection-Segmentation/releases/download/v01/best.pt"
 WEIGHTS_PATH = '/home/vitaliy/runs/detect/train-28/weights/best.pt'
 
+# Авто-определение: если есть GPU, используем его (0), иначе CPU
+DEVICE = 0 if torch.cuda.is_available() else "cpu"
+
 @st.cache_resource
 def load_models():
-    # 1. Создаем папку, если её нет
     os.makedirs(os.path.dirname(WEIGHTS_PATH), exist_ok=True)
     
-    # 2. Скачиваем файл только если его нет локально и указана реальная ссылка
     if not os.path.exists(WEIGHTS_PATH) and "your-cloud-storage" not in WEIGHTS_URL:
         with st.spinner("Downloading model weights from cloud storage... Please wait..."):
             try:
@@ -30,7 +32,6 @@ def load_models():
                 st.error(f"Failed to download weights from cloud: {e}")
                 return None
 
-    # 3. Инициализация модели (если файл на месте)
     if os.path.exists(WEIGHTS_PATH):
         return YOLO(WEIGHTS_PATH)
     else:
@@ -38,11 +39,8 @@ def load_models():
         return None
 
 detect_model = load_models()
-# Проверяем, загрузилась ли модель, чтобы не упасть дальше по коду
 if detect_model is None:
     st.stop()
-
-
 
 page = st.sidebar.selectbox('Please choose pages', ['Detect and Blur Face', 'About model and process of fit'])
 
@@ -84,11 +82,14 @@ if page == 'Detect and Blur Face':
             img_bgr = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
             anon_img = img_bgr.copy()
 
-            results =  detect_model.predict(source=img_bgr, conf=conf_threshold, imgsz=800, device=0, verbose=False)[0]
+            # Заменено на динамический DEVICE вместо жесткого device=0
+            results = detect_model.predict(source=img_bgr, conf=conf_threshold, imgsz=800, device=DEVICE, verbose=False)[0]
+            
             if len(results.boxes) > 0:
                 for box in results.boxes:
-                    x1,y1,x2,y2 = map(int, box.xyxy.squeeze().tolist())
-                    face_roi = anon_img[y1:y2,x1:x2]
+                    # Безопасное извлечение координат без избыточного squeeze
+                    x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
+                    face_roi = anon_img[y1:y2, x1:x2]
 
                     if face_roi.shape[0] > 0 and face_roi.shape[1] > 0:
                         ksize_x = int(face_roi.shape[1] * 0.4) | 1
@@ -96,7 +97,6 @@ if page == 'Detect and Blur Face':
                         blur_face = cv2.GaussianBlur(face_roi, (ksize_x, ksize_y), 0)
                         anon_img[y1:y2, x1:x2] = blur_face
 
-               
                 annot_img = results.plot(labels=True, conf=True, img=anon_img)
                 final_img = cv2.cvtColor(annot_img, cv2.COLOR_BGR2RGB)
             else:
@@ -104,13 +104,13 @@ if page == 'Detect and Blur Face':
 
             col1, col2 = st.columns(2)
             with col1:
-                st.image(img, caption='Original')
+                st.image(img, caption='Original', use_container_width=True)
             with col2:
-                st.image(final_img, caption='Blur_Face')
+                st.image(final_img, caption='Blur_Face', use_container_width=True)
 
 elif page == 'About model and process of fit':
     st.title('Info about model and quality of fit')
-       
+        
     yolo_run_dir = '/home/vitaliy/runs/detect/train-28'
 
     col1, col2, col3, col4 = st.columns(4)
@@ -124,7 +124,7 @@ elif page == 'About model and process of fit':
         st.metric(label='model', value ='yolo11x')
     st.write('---')
 
-    st.header('Graphics  fit quality')
+    st.header('Graphics fit quality')
 
     metrics_mapping = {
         "Матрица ошибок (Confusion Matrix)": "confusion_matrix.png",
@@ -137,10 +137,10 @@ elif page == 'About model and process of fit':
 
     for idx, (title, filename) in enumerate(metrics_mapping.items()):
         full_path = os.path.join(yolo_run_dir, filename)
-        target_col = col_g1 if idx % 2 == 0  else col_g2
+        target_col = col_g1 if idx % 2 == 0 else col_g2
         with target_col:
             st.subheader(title)
             if os.path.exists(full_path):
-                st.image(full_path)
+                st.image(full_path, use_container_width=True)
             else:
-                st.info(f'Graph {filename} not found {yolo_run_dir}')
+                st.info(f'Graph {filename} not found in {yolo_run_dir}')
