@@ -4,6 +4,7 @@ torch
 torchvision
 opencv-python-headless
 Pillow
+requests
 
 
 segmentation_models_pytorch
